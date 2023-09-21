@@ -11,5 +11,11 @@
     "jsonwebtoken": "^9.0.0",
     "mongoose": "^7.2.2",
     "ws": "^8.13.0"
+  },
+  "scripts": {
+    "start": "node index.js",
+    "build": "react-scripts build",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject"
   }
 }
