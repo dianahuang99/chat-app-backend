@@ -37,7 +37,6 @@ app.use(
     resave: false,
     saveUninitialized: true,
     proxy: true,
-    name: "CookieName",
     cookie: { httpOnly: false, secure: true, sameSite: "none" },
   })
 );
