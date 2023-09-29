@@ -19,6 +19,7 @@ const jwtSecret = process.env.JWT_SECRET;
 const bcryptSalt = bcrypt.genSaltSync(10);
 
 const app = express();
+app.set("trust proxy", 1);
 app.use("/files", express.static(__dirname + "/files"));
 app.use(express.json());
 app.use(cookieParser());
@@ -35,6 +36,7 @@ app.use(
     secret: process.env.SECRET_KEY,
     resave: false,
     saveUninitialized: true,
+    proxy: true,
     name: "CookieName",
     cookie: { httpOnly: false, secure: true, sameSite: "none" },
   })
