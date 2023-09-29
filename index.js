@@ -35,7 +35,7 @@ app.use(
     secret: process.env.SECRET_KEY,
     resave: false,
     saveUninitialized: true,
-    cookie: { httpOnly: false },
+    cookie: { httpOnly: false, secure: true },
   })
 );
 
