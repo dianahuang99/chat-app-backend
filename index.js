@@ -35,6 +35,10 @@ app.use(
     secret: process.env.SECRET_KEY,
     resave: false,
     saveUninitialized: true,
+    cookie: {
+      secure: process.env.NODE_ENV === "production", // Set to true in production for HTTPS
+      sameSite: process.env.NODE_ENV === "development" ? "none" : "strict",
+    },
   })
 );
 
