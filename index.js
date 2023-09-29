@@ -22,11 +22,7 @@ const app = express();
 app.use("/files", express.static(__dirname + "/files"));
 app.use(express.json());
 app.use(cookieParser());
-const allowedOrigins = [
-  process.env.CLIENT_URL,
-  process.env.JOKES_API,
-  "http://localhost:5173",
-];
+const allowedOrigins = [process.env.CLIENT_URL, "http://localhost:5173"];
 app.use(
   cors({
     credentials: true,
@@ -62,12 +58,35 @@ async function fetchUserDataFromToken(req) {
     throw err;
   }
 }
-app.get("/jokes", async (req, res) => {
+app.get("/joke", async (req, res) => {
   try {
     const response = await axios.get(
-      "https://v2.jokeapi.dev/joke/Any?type=single"
+      "https://v2.jokeapi.dev/joke/Any?blacklistFlags=nsfw,religious,political,racist,sexist,explicit&type=single"
     );
+    console.log(response.data);
     res.json(response.data);
+  } catch (error) {
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
+app.get("/quote", async (req, res) => {
+  try {
+    const response = await axios.get("https://zenquotes.io/api/random");
+    console.log(response.data[0]);
+    res.json(response.data[0]);
+  } catch (error) {
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
+https: app.get("/tarot", async (req, res) => {
+  try {
+    const response = await axios.get(
+      "https://tarot-api-3hv5.onrender.com/api/v1/cards/random"
+    );
+    console.log(response.data.cards[0]);
+    res.json(response.data.cards[0]);
   } catch (error) {
     res.status(500).json({ error: "Internal Server Error" });
   }
