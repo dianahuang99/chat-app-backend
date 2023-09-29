@@ -9,6 +9,7 @@ const User = require("./models/User");
 const Message = require("./models/Message");
 const ws = require("ws");
 const fs = require("fs");
+const axios = require("axios");
 const flash = require("express-flash");
 const session = require("express-session");
 
@@ -21,10 +22,15 @@ const app = express();
 app.use("/files", express.static(__dirname + "/files"));
 app.use(express.json());
 app.use(cookieParser());
+const allowedOrigins = [
+  process.env.CLIENT_URL,
+  process.env.JOKES_API,
+  "http://localhost:5173",
+];
 app.use(
   cors({
     credentials: true,
-    origin: process.env.CLIENT_URL || "http://localhost:5173",
+    origin: allowedOrigins,
   })
 );
 
@@ -56,7 +62,16 @@ async function fetchUserDataFromToken(req) {
     throw err;
   }
 }
-
+app.get("/jokes", async (req, res) => {
+  try {
+    const response = await axios.get(
+      "https://v2.jokeapi.dev/joke/Any?type=single"
+    );
+    res.json(response.data);
+  } catch (error) {
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
 app.get("/messages/:userId", async (req, res) => {
   const { userId } = req.params;
   const userData = await fetchUserDataFromToken(req);
