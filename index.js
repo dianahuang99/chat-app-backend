@@ -9,6 +9,7 @@ const User = require("./models/User");
 const Message = require("./models/Message");
 const ws = require("ws");
 const fs = require("fs");
+const axios = require("axios");
 const flash = require("express-flash");
 const session = require("express-session");
 
@@ -21,17 +22,18 @@ const app = express();
 app.use("/files", express.static(__dirname + "/files"));
 app.use(express.json());
 app.use(cookieParser());
+const allowedOrigins = [process.env.CLIENT_URL, "http://localhost:5173"];
 app.use(
   cors({
     credentials: true,
-    origin: process.env.CLIENT_URL || "http://localhost:5173",
+    origin: allowedOrigins,
   })
 );
 
 app.use(
   session({
     secret: process.env.SECRET_KEY,
-    resave: false,
+    resave: true,
     saveUninitialized: true,
   })
 );
@@ -56,7 +58,39 @@ async function fetchUserDataFromToken(req) {
     throw err;
   }
 }
+app.get("/joke", async (req, res) => {
+  try {
+    const response = await axios.get(
+      "https://v2.jokeapi.dev/joke/Any?blacklistFlags=nsfw,religious,political,racist,sexist,explicit&type=single"
+    );
+    console.log(response.data);
+    res.json(response.data);
+  } catch (error) {
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
 
+app.get("/quote", async (req, res) => {
+  try {
+    const response = await axios.get("https://zenquotes.io/api/random");
+    console.log(response.data[0]);
+    res.json(response.data[0]);
+  } catch (error) {
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
+https: app.get("/tarot", async (req, res) => {
+  try {
+    const response = await axios.get(
+      "https://tarot-api-3hv5.onrender.com/api/v1/cards/random"
+    );
+    console.log(response.data.cards[0]);
+    res.json(response.data.cards[0]);
+  } catch (error) {
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
 app.get("/messages/:userId", async (req, res) => {
   const { userId } = req.params;
   const userData = await fetchUserDataFromToken(req);
